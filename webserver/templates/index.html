@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Narrow Jumbotron Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/bower_components/bootstrap/dist/css/jumbotron-narrow.css" rel="stylesheet">
+
+    <!-- RickShaw CSS -->
+    <link rel="stylesheet" type="text/css" href="static/bower_components/rickshaw/rickshaw.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script type="text/javascript" src="static/bower_components/rickshaw/vendor/d3.min.js"></script>
+    <script type="text/javascript" src="static/bower_components/rickshaw/vendor/d3.layout.min.js"></script>
+
+    <script type="text/javascript" src="static/bower_components/rickshaw/rickshaw.min.js"></script>
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+<style>
+    #chart_container {
+        position: relative;
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 30px 0;
+    }
+    #chart {
+        position: relative;
+        left: 40px;
+    }
+    #y_axis {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 40px;
+    }
+</style>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li class="active"><a href="#">Home</a></li>
+        </ul>
+        <h3 class="text-muted">Temperature Sensor Project</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h2>Raspberry Pi Temperature Project</h2>
+        <h4>Current temp is <span id="temp">{{ current_temp|round(2) }}</span>.</h4>
+            <div id="chart_container">
+                <div id="y_axis"></div>
+                <div id="chart"></div>
+            </div>
+      </div>
+
+
+      <div class="footer">
+        <p>&copy; BrettDangerfield.com 2014</p>
+      </div>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+<script>
+    var graph = new Rickshaw.Graph.Ajax( {
+        element: document.querySelector("#chart"),
+        width: 540,
+        height: 240,
+        min: 74,
+        max: 82,
+        dataURL: '/get_temps',
+        onData: function(data) {
+            return [{
+                name : "Tempature",
+                color: "steelblue",
+                data: data
+            }];
+            // or simply return [data[0].strokeVolume_count]; since it looks like a series object already
+        },
+      
+        onComplete: function() {
+
+            var x_axis = new Rickshaw.Graph.Axis.Time({
+              graph: this.graph
+            });
+            x_axis.graph.update();
+
+            var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+                graph: this.graph
+            } );
+
+            var y_ticks = new Rickshaw.Graph.Axis.Y( {
+                graph: this.graph,
+                orientation: 'left',
+                tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+                element: document.getElementById('y_axis')
+            } );
+
+
+            this.graph.render();
+        }
+    } );
+
+
+</script>
+  </body>
+</html>
+
